@@ -1,8 +1,12 @@
-import type { ExtractionInput, ExtractionOutput } from "~/pipeline/extraction";
+import type {
+  ExtractionInput,
+  ExtractionOutput,
+  ExtractionStep,
+} from "~/pipeline/extraction";
 
-export const dummyExtraction = async (
+export const dummyExtraction: ExtractionStep = async (
   input: ExtractionInput,
 ): Promise<ExtractionOutput> => ({
   extractedFigures: [],
-  artifact: {},
+  artifact: input.artifact,
 });

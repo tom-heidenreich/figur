@@ -1,5 +1,9 @@
-import type { ExecutionInput, ExecutionOutput } from "~/pipeline/execution";
+import type {
+  ExecutionInput,
+  ExecutionOutput,
+  ExecutionStep,
+} from "~/pipeline/execution";
 
-export const dummyExecution = async (
+export const dummyExecution: ExecutionStep = async (
   input: ExecutionInput,
 ): Promise<ExecutionOutput> => [];
