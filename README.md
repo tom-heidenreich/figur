@@ -12,6 +12,18 @@ To run:
 bun run src/index.ts --manifest path/to/manifest.json [--case <id>]...
 ```
 
+To build Docker image:
+
+```bash
+docker build . -t figur
+```
+
+To run docker image:
+
+```bash
+docker run --mount type=bind,src=path/to/directory,dst=/data figur
+```
+
 `--manifest` defaults to `./manifest.json`. `--case` can be given multiple times to run only selected cases. Without a `--case` argument, all cases run.
 
 ## Inputs
