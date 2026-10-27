@@ -3,6 +3,7 @@ import { Pipeline } from "~/pipeline";
 import { dummyExtraction } from "~/pipeline/extraction/dummy";
 import { dummyAssociation } from "~/pipeline/association/dummy";
 import { dummyExecution } from "~/pipeline/execution/dummy";
+import { dummyComparison } from "~/pipeline/comparison/dummy";
 import { dummyReporting } from "~/pipeline/reporting/dummy";
 import { loadManifest } from "~/input/manifest";
 
@@ -31,6 +32,7 @@ const cases = manifest.cases.filter((c) => selected.includes(c.id));
 const pipeline = Pipeline.pipe(dummyExtraction)
   .pipe(dummyAssociation)
   .pipe(dummyExecution)
+  .pipe(dummyComparison)
   .pipe(dummyReporting)
   .build();
 

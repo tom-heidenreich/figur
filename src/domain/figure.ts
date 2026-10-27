@@ -11,3 +11,5 @@ export type FigurePair = {
   publishedFigure: Figure;
   generatedFigure: Figure;
 };
+
+export type ComparedFigurePair = FigurePair & { similarityScore: number };
