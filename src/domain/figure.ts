@@ -1,6 +1,16 @@
-export type Figure = {};
+import type { GuessDepVersionsQueryResult } from "@eagleoutice/flowr/queries/catalog/guess-dep-versions-query/guess-dep-versions-query-format";
 
-export type CodeSlice = {};
+export type Figure = {
+  pageNumber: number;
+  name: string;
+  data: Uint8Array<ArrayBufferLike>;
+};
+
+export type CodeSlice = {
+  content: string;
+  dependencyVersions: GuessDepVersionsQueryResult;
+  inputFilePaths: string[];
+};
 
 export type FigureCodePair = {
   figure: Figure;
