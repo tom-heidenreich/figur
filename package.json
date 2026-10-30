@@ -4,12 +4,15 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "cli-highlight": "^2.1.11"
   },
   "peerDependencies": {
     "typescript": "^7"
   },
   "dependencies": {
+    "@eagleoutice/flowr": "^2.16.7",
+    "pdf-parse": "^2.4.5",
     "zod": "^4.6.5"
   }
 }
