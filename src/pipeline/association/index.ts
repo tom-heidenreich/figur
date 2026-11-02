@@ -5,10 +5,11 @@ import type { PipelineStep } from "~/pipeline";
 export type AssociationInput = {
   extractedFigures: Figure[];
   artifact: PaperArtifact;
+  cutoffDate?: string;
 };
 export type AssociationOutput = {
-  extractedFigures: Figure[],
-  codeSlice: CodeSlice
+  extractedFigures: Figure[];
+  codeSlice: CodeSlice;
 };
 
 export type AssociationStep = PipelineStep<AssociationInput, AssociationOutput>;

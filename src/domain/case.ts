@@ -5,4 +5,5 @@ export type Case = {
   document: PaperDocument;
   artifact: PaperArtifact;
   outputDir: string;
+  publicationDate?: string;
 };

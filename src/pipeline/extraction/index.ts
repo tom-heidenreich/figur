@@ -8,6 +8,7 @@ export type ExtractionInput = Case;
 export type ExtractionOutput = {
   extractedFigures: Figure[];
   artifact: PaperArtifact;
+  cutoffDate?: string;
 };
 
 export type ExtractionStep = PipelineStep<ExtractionInput, ExtractionOutput>;

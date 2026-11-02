@@ -41,6 +41,7 @@ export const pdfParseExtraction: ExtractionStep = async (
     return {
       extractedFigures: figures,
       artifact: input.artifact,
+      cutoffDate: input.publicationDate
     };
   } finally {
     await parser.destroy();

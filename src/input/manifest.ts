@@ -15,6 +15,10 @@ const CaseSchema = z.strictObject({
   artifact: z.strictObject({
     path: z.string().min(1),
   }),
+  publicationDate: z
+    .string()
+    .regex(/^\d{4}$/, "Must be a 4-digit year")
+    .optional(),
   output: z.string().min(1).optional(),
 });
 
@@ -117,6 +121,7 @@ export const loadManifest = async (manifestPath: string): Promise<Manifest> => {
           outputDir: c.output
             ? resolve(baseDir, c.output)
             : join(outputRoot, c.id),
+          publicationDate: c.publicationDate,
         },
         problems,
       };

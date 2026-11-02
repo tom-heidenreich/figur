@@ -53,7 +53,7 @@ export const inOrderAssociation: AssociationStep = async (
 
   const sliceQueryResults = await analyzer.query([
     { type: "dependencies" },
-    { type: "guess-dep-versions" },
+    { type: "guess-dep-versions", date: input.cutoffDate },
   ]);
   const inputFilePaths = sliceQueryResults.dependencies.read
     .map((read) => read.value && join(input.artifact.path, read.value))
