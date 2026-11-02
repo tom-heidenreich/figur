@@ -1,3 +1,4 @@
+import type { GuessDepVersionsQueryResult } from "@eagleoutice/flowr/queries/catalog/guess-dep-versions-query/guess-dep-versions-query-format";
 import { mkdtemp, readdir, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
@@ -7,6 +8,17 @@ import type {
   ExecutionOutput,
   ExecutionStep,
 } from "~/pipeline/execution";
+
+const wrapWithDependencies = (
+  code: string,
+  dependencies: GuessDepVersionsQueryResult,
+): string => `
+# /// script
+# [dependencies]
+${dependencies.dependencies.map((dep) => `# ${dep.package === "base" ? "R" : dep.package} = "${dep.range.replace(" ", ", ")}"`).join("\n")}
+# ///
+${code}
+`;
 
 // every device the script opens (implicitly or explicitly) writes pngs into outDir,
 // each device gets its own prefix so a dev.off() followed by a new plot doesn't overwrite earlier files
@@ -32,7 +44,13 @@ graphics.off()
 const executeSlice = async (slice: CodeSlice): Promise<Figure[]> => {
   const outDir = await mkdtemp(join(tmpdir(), "figur-"));
   const scriptPath = join(outDir, "script.R");
-  await Bun.write(scriptPath, wrapWithDevice(slice.content, outDir));
+  await Bun.write(
+    scriptPath,
+    wrapWithDependencies(
+      wrapWithDevice(slice.content, outDir),
+      slice.dependencyVersions,
+    ),
+  );
 
   // link input files to temp dir
   await Promise.all(
@@ -49,7 +67,17 @@ const executeSlice = async (slice: CodeSlice): Promise<Figure[]> => {
     ),
   );
 
-  const proc = Bun.spawn(["Rscript", "--vanilla", scriptPath], {
+  const procLock = Bun.spawn(
+    ["rig", "proj", "lock", "--script", scriptPath, "--no-cache"],
+    {
+      cwd: outDir,
+      stdout: "pipe",
+      stderr: "pipe",
+    },
+  );
+  await Promise.all([procLock.exited, new Response(procLock.stderr).text()]);
+
+  const proc = Bun.spawn(["rig", "run", scriptPath], {
     cwd: outDir,
     stdout: "pipe",
     stderr: "pipe",
