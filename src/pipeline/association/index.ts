@@ -1,4 +1,4 @@
-import type { CodeSlice, Figure, FigureCodePair } from "~/domain/figure";
+import type { CodeSlice, Figure } from "~/domain/figure";
 import type { PaperArtifact } from "~/domain/paper";
 import type { PipelineStep } from "~/pipeline";
 

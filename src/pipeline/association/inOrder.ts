@@ -2,7 +2,6 @@ import { FlowrAnalyzerBuilder } from "@eagleoutice/flowr";
 import { FlowrAnalyzerRmdFilePlugin } from "@eagleoutice/flowr/project/plugins/file-plugins/notebooks/flowr-analyzer-rmd-file-plugin";
 import { FlowrAnalyzerDefaultProjectDiscoveryPlugin } from "@eagleoutice/flowr/project/plugins/project-discovery/flowr-analyzer-project-discovery-plugin";
 import type { StaticSliceQueryResult } from "@eagleoutice/flowr/queries/catalog/static-slice-query/static-slice-query-format";
-import { highlight } from "cli-highlight";
 import type {
   AssociationInput,
   AssociationOutput,
