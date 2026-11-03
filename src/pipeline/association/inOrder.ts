@@ -9,8 +9,14 @@ import type {
   AssociationStep,
 } from "~/pipeline/association";
 import { join } from "node:path";
+import { archiveBuiltIns } from "./flowrBuiltIns";
 
 const analyzer = await new FlowrAnalyzerBuilder()
+  .amendConfig((config) => {
+    config.semantics.environment.overwriteBuiltIns.definitions.push(
+      ...archiveBuiltIns,
+    );
+  })
   .setEngine("tree-sitter")
   .registerPlugins(
     new FlowrAnalyzerDefaultProjectDiscoveryPlugin(),
