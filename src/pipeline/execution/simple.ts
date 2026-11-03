@@ -1,4 +1,7 @@
-import type { GuessDepVersionsQueryResult } from "@eagleoutice/flowr/queries/catalog/guess-dep-versions-query/guess-dep-versions-query-format";
+import type {
+  GuessDepVersionsQueryResult,
+  GuessedDependency,
+} from "@eagleoutice/flowr/queries/catalog/guess-dep-versions-query/guess-dep-versions-query-format";
 import { mkdtemp, readdir, symlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
@@ -9,16 +12,54 @@ import type {
   ExecutionStep,
 } from "~/pipeline/execution";
 
+const toConstraint = (dep: GuessedDependency): string =>
+  [
+    dep.minVersion && `>= ${dep.minVersion}`,
+    dep.maxVersion && `<= ${dep.maxVersion}`,
+  ]
+    .filter(Boolean)
+    .join(", ") || "*";
+
+// Pin R version to newest, so rig doesn't pick an ancient one.
+const toRConstraint = (dep: GuessedDependency): string => {
+  const releaseLine = dep.maxVersion?.split(".").slice(0, 2).join(".");
+  return releaseLine ?? toConstraint(dep);
+};
+
+/**
+ * Add the inline dependencies block for rig.
+ * @param code
+ * @param dependencies
+ * @param cutoffDate ISO day (YYYY-MM-DD), e.g. flowR's dateCutoff
+ * @returns
+ */
 const wrapWithDependencies = (
   code: string,
   dependencies: GuessDepVersionsQueryResult,
-): string => `
+  cutoffDate?: string,
+): string => {
+  const metadata = [
+    "[dependencies]",
+    ...dependencies.dependencies
+      // the other base packages ship with R, their version is the R version
+      .filter((dep) => !dep.base || dep.package === "base")
+      .map((dep) =>
+        dep.package === "base"
+          ? `R = "${toRConstraint(dep)}"`
+          : `${dep.package} = "${toConstraint(dep)}"`,
+      ),
+    `ggmirt = { git = "https://github.com/masurp/ggmirt.git" }`, // TODO: github dependencies aren't detected automatically yet
+    ...(cutoffDate
+      ? ["", "[tool.rig]", `exclude-newer = "${cutoffDate}"`]
+      : []),
+  ];
+  return `
 # /// script
-# [dependencies]
-${dependencies.dependencies.map((dep) => `# ${dep.package === "base" ? "R" : dep.package} = "${dep.range.replace(" ", ", ")}"`).join("\n")}
+${metadata.map((line) => `# ${line}`.trimEnd()).join("\n")}
 # ///
 ${code}
 `;
+};
 
 // every device the script opens (implicitly or explicitly) writes pngs into outDir,
 // each device gets its own prefix so a dev.off() followed by a new plot doesn't overwrite earlier files
@@ -49,6 +90,7 @@ const executeSlice = async (slice: CodeSlice): Promise<Figure[]> => {
     wrapWithDependencies(
       wrapWithDevice(slice.content, outDir),
       slice.dependencyVersions,
+      slice.dependencyVersions.dateCutoff,
     ),
   );
 
@@ -66,16 +108,6 @@ const executeSlice = async (slice: CodeSlice): Promise<Figure[]> => {
       (dependency) => `${dependency.package} ${dependency.range}`,
     ),
   );
-
-  const procLock = Bun.spawn(
-    ["rig", "proj", "lock", "--script", scriptPath, "--no-cache"],
-    {
-      cwd: outDir,
-      stdout: "pipe",
-      stderr: "pipe",
-    },
-  );
-  await Promise.all([procLock.exited, new Response(procLock.stderr).text()]);
 
   const proc = Bun.spawn(["rig", "run", scriptPath], {
     cwd: outDir,
@@ -105,8 +137,7 @@ const executeSlice = async (slice: CodeSlice): Promise<Figure[]> => {
 export const simpleExecution: ExecutionStep = async (
   input: ExecutionInput,
 ): Promise<ExecutionOutput> => {
-  const output: ExecutionOutput = [];
-  const generated = await executeSlice(input.codeSlice);
-  console.log(generated.map((value) => value.name));
-  return output;
+  const generatedFigures = await executeSlice(input.codeSlice);
+  console.log(generatedFigures.map((value) => value.name));
+  return { extractedFigures: input.extractedFigures, generatedFigures };
 };
