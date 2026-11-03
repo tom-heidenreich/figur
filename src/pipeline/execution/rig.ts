@@ -134,7 +134,7 @@ const executeSlice = async (slice: CodeSlice): Promise<Figure[]> => {
   );
 };
 
-export const simpleExecution: ExecutionStep = async (
+export const rigExecution: ExecutionStep = async (
   input: ExecutionInput,
 ): Promise<ExecutionOutput> => {
   const generatedFigures = await executeSlice(input.codeSlice);
