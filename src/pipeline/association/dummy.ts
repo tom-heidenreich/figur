@@ -6,4 +6,18 @@ import type {
 
 export const dummyAssociation: AssociationStep = async (
   input: AssociationInput,
-): Promise<AssociationOutput> => [];
+): Promise<AssociationOutput> => {
+  return {
+    extractedFigures: [],
+    codeSlice: {
+      content: "",
+      dependencyVersions: {
+        ".meta": {
+          timing: 0,
+        },
+        dependencies: [],
+      },
+      inputFilePaths: [],
+    },
+  };
+};
