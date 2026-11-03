@@ -61,9 +61,14 @@ export const inOrderAssociation: AssociationStep = async (
     { type: "dependencies" },
     { type: "guess-dep-versions", date: input.cutoffDate },
   ]);
-  const inputFilePaths = sliceQueryResults.dependencies.read
-    .map((read) => read.value && join(input.artifact.path, read.value))
-    .filter((value) => value !== undefined);
+  const inputFilePaths = sliceQueryResults.dependencies.read.flatMap((read) =>
+    read.value !== undefined && read.value !== "unknown"
+      ? [join(input.artifact.path, read.value)]
+      : [],
+  );
+
+  console.log("\n\n######### Reads ##########");
+  console.log(sliceQueryResults.dependencies.read);
 
   analyzer.reset();
 
