@@ -6,4 +6,4 @@ import type {
 
 export const dummyReporting: ReportingStep = async (
   input: ReportingInput,
-): Promise<ReportingOutput> => ({});
+): Promise<ReportingOutput> => ({ pairs: [] });

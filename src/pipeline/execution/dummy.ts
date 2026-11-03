@@ -6,4 +6,7 @@ import type {
 
 export const dummyExecution: ExecutionStep = async (
   input: ExecutionInput,
-): Promise<ExecutionOutput> => [];
+): Promise<ExecutionOutput> => ({
+  extractedFigures: input.extractedFigures,
+  generatedFigures: [],
+});
