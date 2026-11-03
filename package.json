@@ -13,6 +13,7 @@
   "dependencies": {
     "@eagleoutice/flowr": "^2.16.7",
     "pdf-parse": "^2.4.5",
+    "sharp": "^0.35.5",
     "zod": "^4.6.5"
   }
 }
