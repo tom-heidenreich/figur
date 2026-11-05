@@ -5,6 +5,7 @@ import type { ExecutionStage } from "~/stages/execution";
 import type { ComparisonStage } from "~/stages/comparison";
 import type { ReportingStage } from "~/stages/reporting";
 import type { Case } from "~/domain/case";
+import type { Report } from "~/domain/report";
 
 export type StageContext = {
   logger: Logger;
@@ -17,6 +18,7 @@ export type Stage<I, O> = {
 };
 
 export type RawInput = Case;
+export type FinalResult = Report;
 
 export type Stages = {
   extraction: ExtractionStage;

@@ -1,10 +1,13 @@
 import type { StageName, Stages } from "~/stages";
 
-export interface StepRecord<O> {
-  output?: O;
-  error?: Error;
-  durationMs: number;
-}
+export type StepRecord<O> = (
+  | {
+      output: O;
+    }
+  | {
+      error: Error;
+    }
+) & { durationMs: number };
 
 export type StageOutputs = {
   [K in StageName]: Awaited<ReturnType<Stages[K]["run"]>>;
