@@ -4,8 +4,8 @@ import type {
   StageContext,
   StageName,
   Stages,
-} from "~/stages";
-import { timed, type Trace } from "~/utils/trace";
+} from "#core/stages";
+import { timed, type Trace } from "#core/utils/trace";
 
 type PipelineResult<O> = (
   | {

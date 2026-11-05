@@ -1,0 +1,5 @@
+{
+  "name": "figur",
+  "private": true,
+  "workspaces": ["core", "testbed", "experiments"]
+}

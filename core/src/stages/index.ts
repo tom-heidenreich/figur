@@ -1,11 +1,11 @@
-import type { Logger } from "~/utils/logger";
-import type { ExtractionStage } from "~/stages/extraction";
-import type { AssociationStage } from "~/stages/association";
-import type { ExecutionStage } from "~/stages/execution";
-import type { ComparisonStage } from "~/stages/comparison";
-import type { ReportingStage } from "~/stages/reporting";
-import type { Case } from "~/domain/case";
-import type { Report } from "~/domain/report";
+import type { Logger } from "#core/utils/logger";
+import type { ExtractionStage } from "#core/stages/extraction";
+import type { AssociationStage } from "#core/stages/association";
+import type { ExecutionStage } from "#core/stages/execution";
+import type { ComparisonStage } from "#core/stages/comparison";
+import type { ReportingStage } from "#core/stages/reporting";
+import type { Case } from "#core/domain/case";
+import type { Report } from "#core/domain/report";
 
 export type StageContext = {
   logger: Logger;

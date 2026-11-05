@@ -1,4 +1,4 @@
-import type { StageName, Stages } from "~/stages";
+import type { StageName, Stages } from "#core/stages";
 
 export type StepRecord<O> = (
   | {

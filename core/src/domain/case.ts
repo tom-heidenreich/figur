@@ -1,4 +1,4 @@
-import type { PaperArtifact, PaperDocument } from "~/domain/paper";
+import type { PaperArtifact, PaperDocument } from "#core/domain/paper";
 
 export type Case = {
   id: string;

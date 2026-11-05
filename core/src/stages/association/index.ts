@@ -1,7 +1,7 @@
-import type { Figure, FigureCodePair } from "~/domain/figure";
-import type { PaperArtifact } from "~/domain/paper";
-import type { Stage } from "~/stages";
-import type { ExtractionInput } from "~/stages/extraction";
+import type { Figure, FigureCodePair } from "#core/domain/figure";
+import type { PaperArtifact } from "#core/domain/paper";
+import type { Stage } from "#core/stages";
+import type { ExtractionInput } from "#core/stages/extraction";
 
 export type AssociationInput = ExtractionInput & {
   s1: {

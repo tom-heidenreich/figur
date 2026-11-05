@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    // shared so that every package resolves the aliases of the packages it imports
+    "paths": {
+      "#core/*": ["./core/src/*"],
+      "#testbed/*": ["./testbed/src/*"],
+      "#experiments/*": ["./experiments/src/*"]
+    }
+  }
+}

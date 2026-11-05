@@ -1,4 +1,5 @@
 {
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
     // Environment setup & latest features
     "lib": ["ESNext"],
@@ -11,9 +12,6 @@
 
     // Bundler mode
     "moduleResolution": "bundler",
-    "paths": {
-      "~/*": ["./src/*"]
-    },
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,

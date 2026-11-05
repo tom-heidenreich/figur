@@ -1,6 +1,6 @@
-import type { Figure } from "~/domain/figure";
-import type { PaperArtifact } from "~/domain/paper";
-import type { RawInput, Stage } from "~/stages";
+import type { Figure } from "#core/domain/figure";
+import type { PaperArtifact } from "#core/domain/paper";
+import type { RawInput, Stage } from "#core/stages";
 
 export type ExtractionInput = { input: RawInput };
 

@@ -1,6 +1,6 @@
-import type { ComparedFigurePair, FigurePair } from "~/domain/figure";
-import type { ExecutionInput } from "~/stages/execution";
-import type { Stage } from "~/stages";
+import type { ComparedFigurePair, FigurePair } from "#core/domain/figure";
+import type { ExecutionInput } from "#core/stages/execution";
+import type { Stage } from "#core/stages";
 
 export type ComparisonInput = ExecutionInput & {
   s3: FigurePair[];
