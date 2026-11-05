@@ -5,17 +5,15 @@ import type { ExecutionStage } from "~/stages/execution";
 import type { ComparisonStage } from "~/stages/comparison";
 import type { ReportingStage } from "~/stages/reporting";
 import type { Case } from "~/domain/case";
-import type z from "zod";
 
 export type StageContext = {
   logger: Logger;
   signal?: AbortSignal;
 };
 
-export type Stage<I, O, C = {}> = {
+export type Stage<I, O> = {
   readonly id: string; // "step2/variantA"
-  config: z.ZodType<C>;
-  run(input: I, ctx: StageContext, config: C): Promise<O>;
+  run(input: I, ctx: StageContext): Promise<O>;
 };
 
 export type RawInput = Case;

@@ -9,4 +9,4 @@ export type ExtractionOutput = {
   artifact: PaperArtifact;
 };
 
-export type ExtractionStage = Stage<ExtractionInput, ExtractionOutput, { minWidth: number }>;
+export type ExtractionStage = Stage<ExtractionInput, ExtractionOutput>;
