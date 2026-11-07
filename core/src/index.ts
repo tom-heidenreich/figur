@@ -14,3 +14,4 @@ export type {
 export type { Logger } from "#core/utils/logger";
 export type { StageOutputs, StepRecord, Trace } from "#core/utils/trace";
 export { runPipeline } from "#core/pipeline";
+export { defineVariant, type Variant } from "#core/stages/variant";
