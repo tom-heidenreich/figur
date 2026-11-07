@@ -30,14 +30,14 @@ export async function runPipeline(
       st.extraction.run({ input }, ctx),
     );
 
-    currentStage = "association";
+    currentStage = "execution";
     const s2 = await timed(trace, currentStage, () =>
-      st.association.run({ input, s1 }, ctx),
+      st.execution.run({ input, s1 }, ctx),
     );
 
-    currentStage = "execution";
+    currentStage = "association";
     const s3 = await timed(trace, currentStage, () =>
-      st.execution.run({ input, s1, s2 }, ctx),
+      st.association.run({ input, s1, s2 }, ctx),
     );
 
     currentStage = "comparison";
