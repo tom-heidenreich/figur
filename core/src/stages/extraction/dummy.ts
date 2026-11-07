@@ -7,7 +7,9 @@ export const dummyExtraction = defineVariant({
   create:
     ({ figures }) =>
     async ({ input }) => ({
-      extractedFigures: Array.from({ length: figures }, () => ({})),
-      artifact: input.artifact,
+      extractedFigures: Array.from({ length: figures }, (i) => ({
+        name: `figure-${i}`,
+        data: new Uint8Array(),
+      })),
     }),
 });

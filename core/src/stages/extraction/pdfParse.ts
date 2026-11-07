@@ -28,20 +28,17 @@ export const pdfParseExtraction = defineVariant({
           imageThreshold,
         });
 
-        const figures: Figure[] = result.pages
-          .flatMap((page) =>
-            page.images.map((image) => ({
-              pageNumber: page.pageNumber,
-              name: image.name,
-              data: image.data,
-            })),
-          )
+        const figures: Figure[] = result.pages.flatMap((page) => {
           // remove all images from page one for now as they are very likely decorative
-          .filter((figure) => !(figure.pageNumber === 1 && skipFirstPage));
+          if (skipFirstPage && page.pageNumber) return [];
+          return page.images.map((image) => ({
+            name: `${image.name}-p${page.pageNumber}`,
+            data: image.data,
+          }));
+        });
 
         return {
           extractedFigures: figures,
-          artifact: input.artifact,
         };
       } finally {
         await parser.destroy();
