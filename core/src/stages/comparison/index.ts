@@ -1,8 +1,8 @@
 import type { ComparedFigurePair, FigurePair } from "#core/domain/figure";
-import type { ExecutionInput } from "#core/stages/execution";
 import type { Stage } from "#core/stages";
+import type { AssociationInput } from "../association";
 
-export type ComparisonInput = ExecutionInput & {
+export type ComparisonInput = AssociationInput & {
   s3: FigurePair[];
 };
 export type ComparisonOutput = ComparedFigurePair[];
