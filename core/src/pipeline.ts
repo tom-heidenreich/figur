@@ -45,12 +45,7 @@ export async function runPipeline(
       st.comparison.run({ input, s1, s2, s3 }, ctx),
     );
 
-    currentStage = "reporting";
-    const s5 = await timed(trace, currentStage, () =>
-      st.reporting.run({ input, s1, s2, s3, s4 }, ctx),
-    );
-
-    return { ok: true, output: s5, trace };
+    return { ok: true, output: s4, trace };
   } catch (e) {
     return { ok: false, failedStage: currentStage, trace };
   }
