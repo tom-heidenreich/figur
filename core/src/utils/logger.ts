@@ -1,5 +1,6 @@
 export interface Logger {
-  info: (message: string) => void;
-  warn: (message: string) => void;
-  error: (message: string) => void;
+  debug: (...data: any[]) => void;
+  info: (...data: any[]) => void;
+  warn: (...data: any[]) => void;
+  error: (...data: any[]) => void;
 }
