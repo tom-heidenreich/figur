@@ -4,7 +4,8 @@
     "paths": {
       "#core/*": ["./core/src/*"],
       "#testbed/*": ["./testbed/src/*"],
-      "#experiments/*": ["./experiments/src/*"]
+      "#experiments/*": ["./experiments/src/*"],
+      "#tool/*": ["./tool/src"]
     }
   }
 }
