@@ -1,5 +1,5 @@
 {
   "name": "figur",
   "private": true,
-  "workspaces": ["core", "testbed", "experiments"]
+  "workspaces": ["core", "testbed", "experiments", "tool"]
 }
