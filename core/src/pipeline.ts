@@ -1,11 +1,12 @@
 import type {
   FinalResult,
   RawInput,
+  Stage,
   StageContext,
   StageName,
   Stages,
 } from "#core/stages";
-import { timed, type Trace } from "#core/utils/trace";
+import { timed, type StageOutputs, type Trace } from "#core/utils/trace";
 
 type PipelineResult<O> = (
   | {
@@ -18,40 +19,48 @@ type PipelineResult<O> = (
     }
 ) & { trace: Trace };
 
+export async function runStage<I, K extends StageName>(
+  stage: Stage<I, StageOutputs[K]>,
+  input: I,
+  ctx: StageContext,
+  trace?: Trace,
+): Promise<PipelineResult<StageOutputs[K]>> {
+  if (!trace) trace = {};
+  const stageName = stage.id.split("/")[0] as K;
+  try {
+    ctx.signal?.throwIfAborted();
+    const output = await timed(trace, stageName, () => stage.run(input, ctx));
+    return { ok: true, output: output as StageOutputs[K], trace };
+  } catch (e) {
+    return { ok: false, failedStage: stageName, trace };
+  }
+}
+
 export async function runPipeline(
   input: RawInput,
   st: Stages,
   ctx: StageContext,
 ): Promise<PipelineResult<FinalResult>> {
   const trace: Trace = {};
-  let currentStage: StageName = "extraction";
-  try {
-    ctx.signal?.throwIfAborted();
-    const s1 = await timed(trace, currentStage, () =>
-      st.extraction.run({ input }, ctx),
-    );
+  const s1 = await runStage(st.extraction, { input }, ctx, trace);
+  if (!s1.ok) return s1;
 
-    ctx.signal?.throwIfAborted();
-    currentStage = "execution";
-    const s2 = await timed(trace, currentStage, () =>
-      st.execution.run({ input, s1 }, ctx),
-    );
+  const s2 = await runStage(st.execution, { input, s1: s1.output }, ctx, trace);
+  if (!s2.ok) return s2;
 
-    ctx.signal?.throwIfAborted();
-    currentStage = "association";
-    const s3 = await timed(trace, currentStage, () =>
-      st.association.run({ input, s1, s2 }, ctx),
-    );
+  const s3 = await runStage(
+    st.association,
+    { input, s1: s1.output, s2: s2.output },
+    ctx,
+    trace,
+  );
+  if (!s3.ok) return s3;
 
-    ctx.signal?.throwIfAborted();
-    currentStage = "comparison";
-    const s4 = await timed(trace, currentStage, () =>
-      st.comparison.run({ input, s1, s2, s3 }, ctx),
-    );
-
-    ctx.signal?.throwIfAborted();
-    return { ok: true, output: s4, trace };
-  } catch (e) {
-    return { ok: false, failedStage: currentStage, trace };
-  }
+  const s4 = await runStage(
+    st.comparison,
+    { input, s1: s1.output, s2: s2.output, s3: s3.output },
+    ctx,
+    trace,
+  );
+  return s4;
 }
