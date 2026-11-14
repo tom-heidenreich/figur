@@ -26,25 +26,30 @@ export async function runPipeline(
   const trace: Trace = {};
   let currentStage: StageName = "extraction";
   try {
+    ctx.signal?.throwIfAborted();
     const s1 = await timed(trace, currentStage, () =>
       st.extraction.run({ input }, ctx),
     );
 
+    ctx.signal?.throwIfAborted();
     currentStage = "execution";
     const s2 = await timed(trace, currentStage, () =>
       st.execution.run({ input, s1 }, ctx),
     );
 
+    ctx.signal?.throwIfAborted();
     currentStage = "association";
     const s3 = await timed(trace, currentStage, () =>
       st.association.run({ input, s1, s2 }, ctx),
     );
 
+    ctx.signal?.throwIfAborted();
     currentStage = "comparison";
     const s4 = await timed(trace, currentStage, () =>
       st.comparison.run({ input, s1, s2, s3 }, ctx),
     );
 
+    ctx.signal?.throwIfAborted();
     return { ok: true, output: s4, trace };
   } catch (e) {
     return { ok: false, failedStage: currentStage, trace };
