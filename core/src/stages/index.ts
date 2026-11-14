@@ -12,7 +12,7 @@ export type StageContext = {
 };
 
 export type Stage<I, O> = {
-  readonly id: string; // "step2/variantA"
+  readonly id: `${StageName}/${string}`
   run(input: I, ctx: StageContext): Promise<O>;
 };
 
