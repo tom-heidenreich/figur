@@ -3,7 +3,6 @@ import type { ExtractionStage } from "#core/stages/extraction";
 import type { AssociationStage } from "#core/stages/association";
 import type { ExecutionStage } from "#core/stages/execution";
 import type { ComparisonStage } from "#core/stages/comparison";
-import type { ReportingStage } from "#core/stages/reporting";
 import type { Case } from "#core/domain/case";
 import type { Report } from "#core/domain/report";
 
@@ -25,7 +24,6 @@ export type Stages = {
   execution: ExecutionStage;
   association: AssociationStage;
   comparison: ComparisonStage;
-  reporting: ReportingStage;
 };
 
 export type StageName = keyof Stages;
