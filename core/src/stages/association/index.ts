@@ -1,15 +1,13 @@
-import type { Figure, FigureCodePair } from "#core/domain/figure";
-import type { PaperArtifact } from "#core/domain/paper";
+import type { Figure, FigurePair } from "#core/domain/figure";
 import type { Stage } from "#core/stages";
-import type { ExtractionInput } from "#core/stages/extraction";
+import type { ExecutionInput } from "../execution";
 
-export type AssociationInput = ExtractionInput & {
-  s1: {
-    extractedFigures: Figure[];
-    artifact: PaperArtifact;
+export type AssociationInput = ExecutionInput & {
+  s2: {
+    generatedFigures: Figure[];
   };
 };
 
-export type AssociationOutput = FigureCodePair[];
+export type AssociationOutput = FigurePair[];
 
 export type AssociationStage = Stage<AssociationInput, AssociationOutput>;

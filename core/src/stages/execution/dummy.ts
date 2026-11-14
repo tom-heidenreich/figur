@@ -9,13 +9,16 @@ export const dummyExecution = defineVariant({
   }),
   create:
     ({ failOn }) =>
-    async ({ input, s2 }) => {
+    async ({ input }) => {
       if (failOn.includes(input.id)) {
         throw new Error(`dummy execution failure for ${input.id}`);
       }
-      return s2.map(({ figure }) => ({
-        publishedFigure: figure,
-        generatedFigure: {},
-      }));
+
+      return {
+        generatedFigures: new Array(3).map((i) => ({
+          name: `figure-${i}`,
+          data: new Uint8Array(),
+        })),
+      };
     },
 });

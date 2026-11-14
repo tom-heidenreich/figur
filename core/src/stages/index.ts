@@ -22,8 +22,8 @@ export type FinalResult = Report;
 
 export type Stages = {
   extraction: ExtractionStage;
-  association: AssociationStage;
   execution: ExecutionStage;
+  association: AssociationStage;
   comparison: ComparisonStage;
   reporting: ReportingStage;
 };

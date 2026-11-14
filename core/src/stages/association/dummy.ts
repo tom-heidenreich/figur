@@ -6,6 +6,11 @@ export const dummyAssociation = defineVariant({
   params: z.object({ abc: z.number() }),
   create:
     ({ abc }) =>
-    async ({ s1 }) =>
-      s1.extractedFigures.map((figure) => ({ figure, codeSlice: {} })),
+    async ({ s1, s2 }) =>
+      s1.extractedFigures.flatMap((publishedFigure) =>
+        s2.generatedFigures.map((generatedFigure) => ({
+          publishedFigure,
+          generatedFigure,
+        })),
+      ),
 });
