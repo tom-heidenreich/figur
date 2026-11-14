@@ -1,10 +1,6 @@
-export type Figure = {};
-
-export type CodeSlice = {};
-
-export type FigureCodePair = {
-  figure: Figure;
-  codeSlice: CodeSlice;
+export type Figure = {
+  name: string;
+  data: Uint8Array<ArrayBufferLike>;
 };
 
 export type FigurePair = {
