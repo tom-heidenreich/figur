@@ -1,20 +1,21 @@
 import { mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
 import {
-  runPipeline,
   type Logger,
+  type Stage,
   type StageName,
-  type Stages,
+  type StageOutputs,
 } from "@figur/core";
 import type { Dataset, Sample, Split } from "#testbed/dataset";
 import { consoleLogger, prefixed } from "#testbed/logger";
 import { serializeTrace, writeJson } from "#testbed/store";
 import { hashRunSpec } from "#testbed/utils/hash";
+import { runStage } from "#core/pipeline";
 
 export type RunSpec<V, G> = {
   dataset: Dataset<V, G>;
   split: Split;
-  stages: Stages;
+  stage: Stage<V, StageOutputs[StageName]>;
 };
 
 export type RunOptions = {
@@ -54,7 +55,7 @@ export async function runConfig<V, G>(
   for await (const sample of samples) {
     const result = await runCase({
       sample,
-      stages: spec.stages,
+      stage: spec.stage,
       logger,
       runDir,
     });
@@ -67,7 +68,7 @@ export async function runConfig<V, G>(
 
 type CaseRunOptions<V, G> = {
   sample: Sample<V, G>;
-  stages: Stages;
+  stage: Stage<V, StageOutputs[StageName]>;
   runDir: string;
   logger: Logger;
   timeoutMs?: number;
@@ -75,7 +76,7 @@ type CaseRunOptions<V, G> = {
 
 async function runCase<V, G>({
   sample,
-  stages,
+  stage,
   runDir,
   logger,
   timeoutMs,
@@ -88,16 +89,10 @@ async function runCase<V, G>({
 
   const signal = timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined;
   const start = performance.now();
-  const res = await runPipeline(
-    {
-      id: sample.id,
-      document: sample.document,
-      artifact: sample.artifact,
-      outputDir,
-    },
-    stages,
-    { logger: prefixed(logger, sample.id), signal },
-  );
+  const res = await runStage(stage, sample.value, {
+    logger: prefixed(logger, sample.id),
+    signal,
+  });
   const durationMs = performance.now() - start;
   await writeJson(join(dir, "trace.json"), serializeTrace(res.trace));
 
