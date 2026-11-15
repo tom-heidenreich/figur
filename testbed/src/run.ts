@@ -1,0 +1,109 @@
+import { mkdir, rm } from "node:fs/promises";
+import { join } from "node:path";
+import {
+  type Logger,
+  type Stage,
+  type StageName,
+  type StageOutputs,
+} from "@figur/core";
+import type { Dataset, Sample, Split } from "#testbed/dataset";
+import { consoleLogger, prefixed } from "#testbed/logger";
+import { serializeTrace, writeJson } from "#testbed/store";
+import { hashRunSpec } from "#testbed/utils/hash";
+import { runStage } from "#core/pipeline";
+
+export type RunSpec<V, G> = {
+  dataset: Dataset<V, G>;
+  split: Split;
+  stage: Stage<V, StageOutputs[StageName]>;
+};
+
+export type RunOptions = {
+  outDir: string; // the run is stored in `<outDir>/<hash>`
+  concurrency?: number;
+  caseTimeoutMs?: number; // aborts ctx.signal; stages have to honor it
+  logger?: Logger;
+};
+
+export type CaseStatus = "ok" | "failed" | "timeout";
+
+export type CaseResult = {
+  caseId: string;
+  status: CaseStatus;
+  failedStage?: StageName;
+  error?: string;
+  durationMs: number;
+};
+
+export type RunResult = {
+  runDir: string;
+  cases: CaseResult[];
+};
+
+export async function runConfig<V, G>(
+  spec: RunSpec<V, G>,
+  opts: RunOptions,
+): Promise<RunResult> {
+  const logger = opts.logger ?? consoleLogger;
+
+  const hash = hashRunSpec(spec);
+  const runDir = join(opts.outDir, hash);
+
+  const results: CaseResult[] = [];
+
+  const samples = spec.dataset.samples(spec.split);
+  for await (const sample of samples) {
+    const result = await runCase({
+      sample,
+      stage: spec.stage,
+      logger,
+      runDir,
+    });
+    results.push(result);
+    logger.info(`[${sample.id}] ${result.status}`);
+  }
+
+  return { runDir, cases: results };
+}
+
+type CaseRunOptions<V, G> = {
+  sample: Sample<V, G>;
+  stage: Stage<V, StageOutputs[StageName]>;
+  runDir: string;
+  logger: Logger;
+  timeoutMs?: number;
+};
+
+async function runCase<V, G>({
+  sample,
+  stage,
+  runDir,
+  logger,
+  timeoutMs,
+}: CaseRunOptions<V, G>): Promise<CaseResult> {
+  const dir = join(runDir, "cases", sample.id);
+  await rm(dir, { recursive: true, force: true }); // cleanup
+
+  const outputDir = join(dir, "output");
+  await mkdir(outputDir, { recursive: true });
+
+  const signal = timeoutMs ? AbortSignal.timeout(timeoutMs) : undefined;
+  const start = performance.now();
+  const res = await runStage(stage, sample.value, {
+    logger: prefixed(logger, sample.id),
+    signal,
+  });
+  const durationMs = performance.now() - start;
+  await writeJson(join(dir, "trace.json"), serializeTrace(res.trace));
+
+  if (res.ok) return { caseId: sample.id, status: "ok", durationMs };
+
+  const record = res.trace[res.failedStage];
+  return {
+    caseId: sample.id,
+    status: signal?.aborted ? "timeout" : "failed",
+    failedStage: res.failedStage,
+    error: record && "error" in record ? record.error.message : undefined,
+    durationMs,
+  };
+}

@@ -1,24 +1,18 @@
-FROM oven/bun:1 AS base
+FROM oven/bun:1.4.4 AS build
 WORKDIR /usr/src/app
 
-# install dependencies into temp directory
-# this will cache them and speed up future builds
-FROM base AS install
-RUN mkdir -p /temp/dev
-COPY package.json bun.lock /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+COPY core core
+COPY testbed testbed
+COPY tool tool
 
-# install with --production (exclude devDependencies)
-RUN mkdir -p /temp/prod
-COPY package.json bun.lock /temp/prod/
-RUN cd /temp/prod && bun install --frozen-lockfile --production
+COPY package.json bun.lock tsconfig.base.json ./
+RUN bun install --frozen-lockfile --production
 
-FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY src src
-COPY package.json .
-COPY tsconfig.json .
+ENV NODE_ENV=production
+RUN bun build --compile ./tool/index.ts --outfile figur
 
-# run the app
-USER bun
-ENTRYPOINT [ "bun", "run", "src/index.ts", "--manifest", "/data/manifest.json" ]
+FROM eagleoutice/r-run-script:3.4.1
+WORKDIR /app
+COPY --from=build /usr/src/app/figur ./figur
+
+ENTRYPOINT [ "./figur" ]

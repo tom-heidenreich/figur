@@ -1,0 +1,18 @@
+{
+  "name": "@figur/core",
+  "module": "src/index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "pdf-parse": "^2.4.5",
+    "zod": "^4.6.7"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}
