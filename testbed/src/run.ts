@@ -11,8 +11,8 @@ import { consoleLogger, prefixed } from "#testbed/logger";
 import { serializeTrace, writeJson } from "#testbed/store";
 import { hashRunSpec } from "#testbed/utils/hash";
 
-export type RunSpec = {
-  dataset: Dataset;
+export type RunSpec<V, G> = {
+  dataset: Dataset<V, G>;
   split: Split;
   stages: Stages;
 };
@@ -39,8 +39,8 @@ export type RunResult = {
   cases: CaseResult[];
 };
 
-export async function runConfig(
-  spec: RunSpec,
+export async function runConfig<V, G>(
+  spec: RunSpec<V, G>,
   opts: RunOptions,
 ): Promise<RunResult> {
   const logger = opts.logger ?? consoleLogger;
@@ -65,21 +65,21 @@ export async function runConfig(
   return { runDir, cases: results };
 }
 
-type CaseRunOptions = {
-  sample: Sample;
+type CaseRunOptions<V, G> = {
+  sample: Sample<V, G>;
   stages: Stages;
   runDir: string;
   logger: Logger;
   timeoutMs?: number;
 };
 
-async function runCase({
+async function runCase<V, G>({
   sample,
   stages,
   runDir,
   logger,
   timeoutMs,
-}: CaseRunOptions): Promise<CaseResult> {
+}: CaseRunOptions<V, G>): Promise<CaseResult> {
   const dir = join(runDir, "cases", sample.id);
   await rm(dir, { recursive: true, force: true }); // cleanup
 

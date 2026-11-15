@@ -1,18 +1,9 @@
-import type { PaperArtifact, PaperDocument } from "@figur/core";
-
 export type Split = "dev" | "eval";
 
-export type GroundTruth = {};
+export type Sample<V, G> = { id: string, value: V, groundTruth: G }
 
-export interface Sample {
-  id: string;
-  document: PaperDocument;
-  artifact: PaperArtifact;
-  groundTruth: GroundTruth;
-}
-
-export interface Dataset {
+export interface Dataset<V, G> {
   name: string;
   version: string;
-  samples(split: Split): AsyncIterable<Sample>;
+  samples(split: Split): AsyncIterable<Sample<V, G>>;
 }
