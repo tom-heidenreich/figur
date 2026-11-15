@@ -1,5 +1,10 @@
 import { join } from "node:path";
-import { type Stages } from "@figur/core";
+import {
+  type Stage,
+  type StageName,
+  type StageOutputs,
+  type Stages,
+} from "@figur/core";
 import {
   runConfig,
   type Dataset,
@@ -8,20 +13,20 @@ import {
   type Split,
 } from "@figur/testbed";
 
-export type Experiment = {
+export type Experiment<V, G> = {
   name: string;
-  dataset: Dataset;
+  dataset: Dataset<V, G>;
   split: Split;
-  variants: Record<string, Stages>;
+  variants: Record<string, Stage<V, StageOutputs[StageName]>>;
 };
 
-export function defineExperiment(def: {
+export function defineExperiment<V, G>(def: {
   name: string;
-  dataset: Dataset;
+  dataset: Dataset<V, G>;
   split: Split;
-  base: Stages;
-  variants: Record<string, Partial<Stages>>;
-}): Experiment {
+  base: Stage<V, StageOutputs[StageName]>;
+  variants: Record<string, Partial<Stage<V, StageOutputs[StageName]>>>;
+}): Experiment<V, G> {
   return {
     ...def,
     variants: Object.fromEntries(
@@ -38,15 +43,15 @@ export function defineExperiment(def: {
 
 type ExperimentOptions = { runsDir: string } & Omit<RunOptions, "outDir">;
 
-export async function runExperiment(
-  exp: Experiment,
+export async function runExperiment<V, G, O>(
+  exp: Experiment<V, G>,
   { runsDir, ...runOptions }: ExperimentOptions,
 ): Promise<Record<string, RunResult>> {
   const results: Record<string, RunResult> = {};
-  for (const [label, stages] of Object.entries(exp.variants)) {
+  for (const [label, stage] of Object.entries(exp.variants)) {
     // TODO: concurrency
     results[label] = await runConfig(
-      { dataset: exp.dataset, split: exp.split, stages },
+      { dataset: exp.dataset, split: exp.split, stage },
       { ...runOptions, outDir: join(runsDir, exp.name, label) },
     );
   }
